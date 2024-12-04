@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julequizzen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F0F8F9;
+            color: #274247;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #7E5EE8;
+            font-size: 3em; /* Økt skriftstørrelse */
+        }
+        h2 {
+            color: #7E5EE8;
+            font-size: 2em; /* Økt skriftstørrelse */
+        }
+        .question-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .visible {
+            display: block;
+        }
+        .answer-box {
+            background-color: #C3DCDC;
+            border: 2px solid #7E5EE8;
+            border-radius: 10px;
+            padding: 30px; /* Økt padding */
+            margin: 20px auto; /* Økt avstand */
+            width: 85%; /* Litt bredere */
+            max-width: 500px; /* Maksimal bredde */
+            cursor: pointer;
+            font-size: 22px; /* Økt skriftstørrelse */
+            font-weight: bold;
+            color: #274247;
+            transition: transform 0.2s ease;
+        }
+        .answer-box:hover {
+            transform: scale(1.1); /* Litt større skalering */
+            background-color: #b6e8b8;
+        }
+        .message, .progress, .timer {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .timer {
+            color: #FF0000;
+        }
+        img {
+            width: 400px; /* Økt bilde størrelse */
+            margin: 20px 0;
+        }
+        #endMessage {
+            background-color: #ECFEED;
+            padding: 30px; /* Økt padding */
+            border-radius: 10px;
+            border: 2px solid #7E5EE8;
+        }
+        canvas {
+            border: 2px solid #7E5EE8;
+            cursor: crosshair;
+            margin: 20px auto;
+            display: block;
+            background: url('graph.png') no-repeat left center;
+            background-size: auto 100%;
+        }
+        button {
+            padding: 15px 30px; /* Økt padding */
+            font-size: 18px; /* Økt skriftstørrelse */
+            background-color: #00824D;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #274247;
+        }
+    </style>
+</head>
+<body>
+    <h1>Julequizzen</h1>
+    <div id="progress" class="progress">Spørsmål 1 av 4</div>
+    <div id="timer" class="timer">Tid igjen: 45 sekunder</div>
+
+    <div id="question1" class="question-container visible">
+        <h2>Hvor mange juletrær importerte Norge i fjor?</h2>
+        <div class="answer-box" onclick="checkAnswer(1, 1)">500</div>
+        <div class="answer-box" onclick="checkAnswer(1, 2)">165 753</div>
+        <div class="answer-box" onclick="checkAnswer(1, 3)">265 459</div>
+        <div class="answer-box" onclick="checkAnswer(1, 4)">69 420</div>
+        <div id="message1" class="message"></div>
+    </div>
+
+    <div id="question2" class="question-container">
+        <h2>Hvilke av disse reiselivsregionene hadde mest overnattinger på hotell i desember i fjor?</h2>
+        <div class="answer-box" onclick="checkAnswer(2, 1)">Tromsø</div>
+        <div class="answer-box" onclick="checkAnswer(2, 2)">Lillehammer-region</div>
+        <div class="answer-box" onclick="checkAnswer(2, 3)">Lofoten</div>
+        <div class="answer-box" onclick="checkAnswer(2, 4)">Svalbard</div>
+        <div id="message2" class="message"></div>
+    </div>
+
+    <div id="question3" class="question-container">
+        <h2>Hva viser tallet på bildet?</h2>
+        <img src="image.png" alt="Bilde av tall">
+        <div class="answer-box" onclick="checkAnswer(3, 1)">Eksport av akevitt målt i liter</div>
+        <div class="answer-box" onclick="checkAnswer(3, 2)">Import av akevitt målt i liter</div>
+        <div class="answer-box" onclick="checkAnswer(3, 3)">Solgte liter juleøl</div>
+        <div class="answer-box" onclick="checkAnswer(3, 4)">Solgte liter julebrus</div>
+        <div id="message3" class="message"></div>
+    </div>
+
+    <div id="question4" class="question-container">
+        <h2>Går grafen opp eller ned?</h2>
+        <p>Tegn videre på grafen for å vise om den går opp eller ned.</p>
+        <canvas id="draw-area" width="800" height="400"></canvas>
+        <button onclick="checkDrawing()">Sjekk tegning</button>
+        <div id="message4" class="message"></div>
+    </div>
+
+    <div id="endMessage" class="question-container">
+        <h2>Gratulerer, du er ekspert på jule-statistikken!</h2>
+        <img src="nissemann.png" alt="Nissemann">
+        <p id="score">Du fikk poeng!</p>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let score = 0;
+        let timeLeft = 45;
+        let timerInterval;
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = `Spørsmål ${currentQuestion} av 4`;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 45;
+            document.getElementById('timer').textContent = `Tid igjen: ${timeLeft} sekunder`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = `Tid igjen: ${timeLeft} sekunder`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(question, answer) {
+            const correctAnswers = [2, 1, 1]; // Riktige svar for de tre første spørsmålene
+            if (answer === correctAnswers[question - 1]) {
+                score++;
+                document.getElementById(`message${question}`).textContent = "Riktig!";
+                document.getElementById(`question${question}`).classList.remove("visible");
+
+                if (question < 4) {
+                    currentQuestion++;
+                    document.getElementById(`question${currentQuestion}`).classList.add("visible");
+                    updateProgress();
+                    startTimer();
+                } else {
+                    endGame();
+                }
+            } else {
+                document.getElementById(`message${question}`).textContent = "Feil svar. Prøv igjen!";
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.getElementById(`question${currentQuestion}`).classList.remove("visible");
+            document.getElementById("endMessage").classList.add("visible");
+            document.getElementById("score").textContent = `Du fikk ${score} av 4 poeng!`;
+        }
+
+        const canvas = document.getElementById("draw-area");
+        const ctx = canvas.getContext("2d");
+        let drawing = false;
+        let points = [];
+
+        canvas.addEventListener("mousedown", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            drawing = true;
+            points = [];
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (drawing) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                points.push({ x, y });
+            }
+        });
+
+        canvas.addEventListener("mouseup", () => {
+            drawing = false;
+        });
+
+        function checkDrawing() {
+            if (points.length < 2) {
+                document.getElementById("message4").textContent = "Tegn en pil først!";
+                return;
+            }
+
+            const startPoint = points[0];
+            const endPoint = points[points.length - 1];
+
+            if (endPoint.y < startPoint.y) {
+                document.getElementById("message4").textContent = "Riktig! Grafen går oppover.";
+                score++;
+                endGame();
+            } else {
+                document.getElementById("message4").textContent = "Feil! Grafen går ikke nedover.";
+            }
+        }
+
+        updateProgress();
+        startTimer();
+    </script>
+</body>
+</html>
