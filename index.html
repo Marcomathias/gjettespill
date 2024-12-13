@@ -15,11 +15,11 @@
         }
         h1 {
             color: #7E5EE8;
-            font-size: 3em; /* Økt skriftstørrelse */
+            font-size: 3em;
         }
         h2 {
             color: #7E5EE8;
-            font-size: 2em; /* Økt skriftstørrelse */
+            font-size: 2em;
         }
         .question-container {
             display: none;
@@ -32,18 +32,18 @@
             background-color: #C3DCDC;
             border: 2px solid #7E5EE8;
             border-radius: 10px;
-            padding: 30px; /* Økt padding */
-            margin: 20px auto; /* Økt avstand */
-            width: 85%; /* Litt bredere */
-            max-width: 500px; /* Maksimal bredde */
+            padding: 30px; 
+            margin: 20px auto; 
+            width: 85%; 
+            max-width: 500px; 
             cursor: pointer;
-            font-size: 22px; /* Økt skriftstørrelse */
+            font-size: 22px; 
             font-weight: bold;
             color: #274247;
             transition: transform 0.2s ease;
         }
         .answer-box:hover {
-            transform: scale(1.1); /* Litt større skalering */
+            transform: scale(1.1); 
             background-color: #b6e8b8;
         }
         .message, .progress, .timer {
@@ -54,12 +54,12 @@
             color: #FF0000;
         }
         img {
-            width: 400px; /* Økt bilde størrelse */
+            width: 400px; 
             margin: 20px 0;
         }
         #endMessage {
             background-color: #ECFEED;
-            padding: 30px; /* Økt padding */
+            padding: 30px; 
             border-radius: 10px;
             border: 2px solid #7E5EE8;
         }
@@ -72,8 +72,8 @@
             background-size: auto 100%;
         }
         button {
-            padding: 15px 30px; /* Økt padding */
-            font-size: 18px; /* Økt skriftstørrelse */
+            padding: 15px 30px; 
+            font-size: 18px; 
             background-color: #00824D;
             color: #FFFFFF;
             border: none;
@@ -84,11 +84,14 @@
         button:hover {
             background-color: #274247;
         }
+        #nextBtn {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>Julequizzen</h1>
-    <div id="progress" class="progress">Spørsmål 1 av 4</div>
+    <div id="progress" class="progress">Spørsmål 1 av 10</div>
     <div id="timer" class="timer">Tid igjen: 45 sekunder</div>
 
     <div id="question1" class="question-container visible">
@@ -98,6 +101,7 @@
         <div class="answer-box" onclick="checkAnswer(1, 3)">265 459</div>
         <div class="answer-box" onclick="checkAnswer(1, 4)">69 420</div>
         <div id="message1" class="message"></div>
+        <button id="nextBtn1" style="display:none;" onclick="goNextQuestion(1)">Neste spørsmål</button>
     </div>
 
     <div id="question2" class="question-container">
@@ -107,6 +111,7 @@
         <div class="answer-box" onclick="checkAnswer(2, 3)">Lofoten</div>
         <div class="answer-box" onclick="checkAnswer(2, 4)">Svalbard</div>
         <div id="message2" class="message"></div>
+        <button id="nextBtn2" style="display:none;" onclick="goNextQuestion(2)">Neste spørsmål</button>
     </div>
 
     <div id="question3" class="question-container">
@@ -117,6 +122,7 @@
         <div class="answer-box" onclick="checkAnswer(3, 3)">Solgte liter juleøl</div>
         <div class="answer-box" onclick="checkAnswer(3, 4)">Solgte liter julebrus</div>
         <div id="message3" class="message"></div>
+        <button id="nextBtn3" style="display:none;" onclick="goNextQuestion(3)">Neste spørsmål</button>
     </div>
 
     <div id="question4" class="question-container">
@@ -125,7 +131,66 @@
         <canvas id="draw-area" width="800" height="400"></canvas>
         <button onclick="checkDrawing()">Sjekk tegning</button>
         <div id="message4" class="message"></div>
+        <button id="nextBtn4" style="display:none;" onclick="goNextQuestion(4)">Neste spørsmål</button>
     </div>
+
+    <!-- NYE SPØRSMÅL START (med a,b,c og riktige svar-meldinger) -->
+
+    <div id="question5" class="question-container">
+        <h2>Hvor mange kommunikasjonsrådgivere trengs for å sette opp et juletre?</h2>
+        <div class="answer-box" onclick="checkAnswer(5, 1)">a) 1 til å sette opp treet, 2 til å lage innholdsstrategi, 3 til å lage en PowerPoint.</div>
+        <div class="answer-box" onclick="checkAnswer(5, 2)">b) "Det avhenger av målgruppen og hvor mange som ser treet."</div>
+        <div class="answer-box" onclick="checkAnswer(5, 3)">c) Ingen – de outsourcer til tallknusere i statistikkavdelingen.</div>
+        <div id="message5" class="message"></div>
+        <button id="nextBtn5" style="display:none;" onclick="goNextQuestion(5)">Neste spørsmål</button>
+    </div>
+
+    <div id="question6" class="question-container">
+        <h2>Hvor mange deskmedarbeidere trengs for å publisere en sak på nettsiden rett før juleferien?</h2>
+        <div class="answer-box" onclick="checkAnswer(6, 1)">a) 1 til å legge inn saken, 2 til å diskutere bildevalg, og 3 til å lure på om det egentlig er en pressemelding.</div>
+        <div class="answer-box" onclick="checkAnswer(6, 2)">b) Ingen – innholdet blir aldri ferdig til publisering uansett.</div>
+        <div class="answer-box" onclick="checkAnswer(6, 3)">c) "Det avhenger av hvor mange endringer som kommer i siste liten."</div>
+        <div id="message6" class="message"></div>
+        <button id="nextBtn6" style="display:none;" onclick="goNextQuestion(6)">Neste spørsmål</button>
+    </div>
+
+    <div id="question7" class="question-container">
+        <h2>Hva er informasjonstjenestens første reaksjon når noen spør: "Hvor mange bor i Norge akkurat nå?"</h2>
+        <div class="answer-box" onclick="checkAnswer(7, 1)">a) “Kan du definere akkurat nå?”</div>
+        <div class="answer-box" onclick="checkAnswer(7, 2)">b) “Vi har en statistikk for det, men den oppdateres kvartalsvis.”</div>
+        <div class="answer-box" onclick="checkAnswer(7, 3)">c) “Er dette til en skoleoppgave? Vi har en egen side for det!”</div>
+        <div id="message7" class="message"></div>
+        <button id="nextBtn7" style="display:none;" onclick="goNextQuestion(7)">Neste spørsmål</button>
+    </div>
+
+    <div id="question8" class="question-container">
+        <h2>Hvordan vet du at en klarspråksrådgiver har vært involvert i årets julehilsen?</h2>
+        <div class="answer-box" onclick="checkAnswer(8, 1)">a) Det står ikke “På vegne av administrativ ledelse og underavdelinger.”</div>
+        <div class="answer-box" onclick="checkAnswer(8, 2)">b) Setningen "Vi ønsker dere alle en fredfylt og velformulert høytid" er fjernet.</div>
+        <div class="answer-box" onclick="checkAnswer(8, 3)">c) Hilsenen består av maks to setninger og ett hyggelig ønske.</div>
+        <div id="message8" class="message"></div>
+        <button id="nextBtn8" style="display:none;" onclick="goNextQuestion(8)">Neste spørsmål</button>
+    </div>
+
+    <div id="question9" class="question-container">
+        <h2>Hvor mange webredaktører trengs for å publisere en julehilsen på nettsiden?</h2>
+        <div class="answer-box" onclick="checkAnswer(9, 1)">a) 1 til å skrive teksten, 2 til å justere mellomoverskrifter, og 1 til å korrekturlese.</div>
+        <div class="answer-box" onclick="checkAnswer(9, 2)">b) 1 – men kun hvis teksten er på maks 280 tegn.</div>
+        <div class="answer-box" onclick="checkAnswer(9, 3)">c) Det avhenger av hvor mange nøkkelord som må optimaliseres for SEO.</div>
+        <div id="message9" class="message"></div>
+        <button id="nextBtn9" style="display:none;" onclick="goNextQuestion(9)">Neste spørsmål</button>
+    </div>
+
+    <div id="question10" class="question-container">
+        <h2>Hvis SSB skulle lage en statistikk over antall pepperkaker bakt i kommunikasjonsavdelingen, hvilken metode ville vi sannsynligvis brukt?</h2>
+        <div class="answer-box" onclick="checkAnswer(10, 1)">a) Estimering basert på melforbruk</div>
+        <div class="answer-box" onclick="checkAnswer(10, 2)">b) Spørreundersøkelse</div>
+        <div class="answer-box" onclick="checkAnswer(10, 3)">c) Direkte telling</div>
+        <div id="message10" class="message"></div>
+        <button id="nextBtn10" style="display:none;" onclick="goNextQuestion(10)">Vis resultat</button>
+    </div>
+
+    <!-- NYE SPØRSMÅL SLUTT -->
 
     <div id="endMessage" class="question-container">
         <h2>Gratulerer, du er ekspert på jule-statistikken!</h2>
@@ -138,9 +203,11 @@
         let score = 0;
         let timeLeft = 45;
         let timerInterval;
+        
+        const totalQuestions = 10; 
 
         function updateProgress() {
-            document.getElementById('progress').textContent = `Spørsmål ${currentQuestion} av 4`;
+            document.getElementById('progress').textContent = `Spørsmål ${currentQuestion} av ${totalQuestions}`;
         }
 
         function startTimer() {
@@ -158,31 +225,80 @@
             }, 1000);
         }
 
-        function checkAnswer(question, answer) {
-            const correctAnswers = [2, 1, 1]; // Riktige svar for de tre første spørsmålene
-            if (answer === correctAnswers[question - 1]) {
-                score++;
-                document.getElementById(`message${question}`).textContent = "Riktig!";
-                document.getElementById(`question${question}`).classList.remove("visible");
+        // Korrekte svar:
+        // Q1: 2, Q2: 1, Q3: 1, Q4: (tegning)
+        // Q5: b) = 2
+        // Q6: c) = 3
+        // Q7: b) = 2
+        // Q8: a) = 1
+        // Q9: c) = 3
+        // Q10: c) = 3
+        const correctAnswers = [2, 1, 1, null, 2, 3, 2, 1, 3, 3];
 
-                if (question < 4) {
-                    currentQuestion++;
-                    document.getElementById(`question${currentQuestion}`).classList.add("visible");
-                    updateProgress();
-                    startTimer();
-                } else {
-                    endGame();
-                }
+        // Meldinger ved riktig svar (5-10):
+        const correctMessages = {
+            5: "Riktig svar: b) Selvfølgelig, alt handler om målgruppen!)",
+            6: "Riktig svar: c) Desken er alltid klar for 'siste liten'!)",
+            7: "Riktig svar: b) Tallene er aldri så ferske som folk tror!)",
+            8: "Riktig svar: a) Ingen byråkratiske julehilsener på klarspråk-vakt!",
+            9: "Riktig svar: c) SEO er livsviktig – også i julen!)",
+            10:"Riktig svar: c) Fulltelling is King"
+        };
+
+        function showCorrectMessage(question) {
+            if (question <= 4) {
+                return "Riktig!";
             } else {
-                document.getElementById(`message${question}`).textContent = "Feil svar. Prøv igjen!";
+                return correctMessages[question];
+            }
+        }
+
+        function checkAnswer(question, answer) {
+            if (question === 4) return; // Tegnespørsmål sjekkes i checkDrawing()
+            const messageElement = document.getElementById(`message${question}`);
+            const nextBtn = document.getElementById(`nextBtn${question}`);
+
+            if (answer === correctAnswers[question - 1]) {
+                // Riktig svar
+                messageElement.textContent = showCorrectMessage(question);
+                score++;
+                // Vis "Neste spørsmål"/"Vis resultat"-knapp
+                if (question < totalQuestions) {
+                    nextBtn.textContent = "Neste spørsmål";
+                } else {
+                    nextBtn.textContent = "Vis resultat";
+                }
+                nextBtn.style.display = "inline-block";
+            } else {
+                // Feil svar
+                messageElement.textContent = "Feil svar. Prøv igjen!";
+            }
+        }
+
+        function goNextQuestion(question) {
+            document.getElementById(`question${question}`).classList.remove("visible");
+            if (question < totalQuestions) {
+                currentQuestion++;
+                document.getElementById(`question${currentQuestion}`).classList.add("visible");
+                // Skjul eventuelle meldinger og neste-knapp på neste spørsmål
+                document.getElementById(`message${currentQuestion}`).textContent = "";
+                if (document.getElementById(`nextBtn${currentQuestion}`)) {
+                    document.getElementById(`nextBtn${currentQuestion}`).style.display = "none";
+                }
+                updateProgress();
+                startTimer();
+            } else {
+                endGame();
             }
         }
 
         function endGame() {
             clearInterval(timerInterval);
-            document.getElementById(`question${currentQuestion}`).classList.remove("visible");
+            if (document.getElementById(`question${currentQuestion}`)) {
+                document.getElementById(`question${currentQuestion}`).classList.remove("visible");
+            }
             document.getElementById("endMessage").classList.add("visible");
-            document.getElementById("score").textContent = `Du fikk ${score} av 4 poeng!`;
+            document.getElementById("score").textContent = `Du fikk ${score} av ${totalQuestions} poeng!`;
         }
 
         const canvas = document.getElementById("draw-area");
@@ -218,8 +334,11 @@
         });
 
         function checkDrawing() {
+            const messageElement = document.getElementById("message4");
+            const nextBtn4 = document.getElementById("nextBtn4");
+
             if (points.length < 2) {
-                document.getElementById("message4").textContent = "Tegn en pil først!";
+                messageElement.textContent = "Tegn en pil først!";
                 return;
             }
 
@@ -227,11 +346,12 @@
             const endPoint = points[points.length - 1];
 
             if (endPoint.y < startPoint.y) {
-                document.getElementById("message4").textContent = "Riktig! Grafen går oppover.";
+                // Riktig tegning
+                messageElement.textContent = "Riktig! Grafen går oppover.";
                 score++;
-                endGame();
+                nextBtn4.style.display = "inline-block";
             } else {
-                document.getElementById("message4").textContent = "Feil! Grafen går ikke nedover.";
+                messageElement.textContent = "Feil! Grafen går ikke nedover.";
             }
         }
 
