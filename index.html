@@ -46,15 +46,13 @@
             transform: scale(1.1); 
             background-color: #b6e8b8;
         }
-        .message, .progress, .timer {
+        .message, .progress {
             font-weight: bold;
             margin-top: 20px;
         }
-        .timer {
-            color: #FF0000;
-        }
         img {
-            width: 400px; 
+            width: 100%; 
+            max-width: 400px; 
             margin: 20px 0;
         }
         #endMessage {
@@ -68,8 +66,11 @@
             cursor: crosshair;
             margin: 20px auto;
             display: block;
+            width: 100%;
+            max-width: 800px;
+            height: auto;
             background: url('graph.png') no-repeat left center;
-            background-size: auto 100%;
+            background-size: contain;
         }
         button {
             padding: 15px 30px; 
@@ -92,7 +93,7 @@
 <body>
     <h1>Julequizzen</h1>
     <div id="progress" class="progress">Spørsmål 1 av 10</div>
-    <div id="timer" class="timer">Tid igjen: 45 sekunder</div>
+    <div id="currentScore" class="progress">Poeng hittil: 0</div>
 
     <div id="question1" class="question-container visible">
         <h2>Hvor mange juletrær importerte Norge i fjor?</h2>
@@ -134,7 +135,7 @@
         <button id="nextBtn4" style="display:none;" onclick="goNextQuestion(4)">Neste spørsmål</button>
     </div>
 
-    <!-- NYE SPØRSMÅL START (med a,b,c og riktige svar-meldinger) -->
+    <!-- NYE SPØRSMÅL START (5-10) -->
 
     <div id="question5" class="question-container">
         <h2>Hvor mange kommunikasjonsrådgivere trengs for å sette opp et juletre?</h2>
@@ -193,7 +194,7 @@
     <!-- NYE SPØRSMÅL SLUTT -->
 
     <div id="endMessage" class="question-container">
-        <h2>Gratulerer, du er ekspert på jule-statistikken!</h2>
+        <h2 id="endMessageTitle"></h2>
         <img src="nissemann.png" alt="Nissemann">
         <p id="score">Du fikk poeng!</p>
     </div>
@@ -201,39 +202,36 @@
     <script>
         let currentQuestion = 1;
         let score = 0;
-        let timeLeft = 45;
-        let timerInterval;
-        
         const totalQuestions = 10; 
 
         function updateProgress() {
             document.getElementById('progress').textContent = `Spørsmål ${currentQuestion} av ${totalQuestions}`;
         }
 
-        function startTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 45;
-            document.getElementById('timer').textContent = `Tid igjen: ${timeLeft} sekunder`;
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = `Tid igjen: ${timeLeft} sekunder`;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endGame();
-                }
-            }, 1000);
+        function updateScore() {
+            document.getElementById('currentScore').textContent = `Poeng hittil: ${score}`;
         }
 
         // Korrekte svar:
-        // Q1: 2, Q2: 1, Q3: 1, Q4: (tegning)
-        // Q5: b) = 2
-        // Q6: c) = 3
-        // Q7: b) = 2
-        // Q8: a) = 1
-        // Q9: c) = 3
-        // Q10: c) = 3
+        // Q1: 2 (165 753)
+        // Q2: 1 (Tromsø)
+        // Q3: 1 (Eksport av akevitt målt i liter)
+        // Q4: Tegning (Grafen går oppover)
+        // Q5: 2 (b)
+        // Q6: 3 (c)
+        // Q7: 2 (b)
+        // Q8: 1 (a)
+        // Q9: 3 (c)
+        // Q10:3 (c)
         const correctAnswers = [2, 1, 1, null, 2, 3, 2, 1, 3, 3];
+
+        // Tekster for riktige svar på spørsmål 1-4:
+        const correctAnswersText = {
+            1: "165 753",
+            2: "Tromsø",
+            3: "Eksport av akevitt målt i liter",
+            4: "Grafen går oppover"
+        };
 
         // Meldinger ved riktig svar (5-10):
         const correctMessages = {
@@ -245,34 +243,49 @@
             10:"Riktig svar: c) Fulltelling is King"
         };
 
-        function showCorrectMessage(question) {
-            if (question <= 4) {
-                return "Riktig!";
-            } else {
-                return correctMessages[question];
-            }
+        function disableAnswers(question) {
+            const answers = document.querySelectorAll(`#question${question} .answer-box`);
+            answers.forEach(answer => {
+                answer.onclick = null;
+            });
         }
 
         function checkAnswer(question, answer) {
-            if (question === 4) return; // Tegnespørsmål sjekkes i checkDrawing()
             const messageElement = document.getElementById(`message${question}`);
             const nextBtn = document.getElementById(`nextBtn${question}`);
+            const correct = (answer === correctAnswers[question - 1]);
+            
+            // Disable alle svaralternativer etter første klikk
+            disableAnswers(question);
 
-            if (answer === correctAnswers[question - 1]) {
-                // Riktig svar
-                messageElement.textContent = showCorrectMessage(question);
-                score++;
-                // Vis "Neste spørsmål"/"Vis resultat"-knapp
-                if (question < totalQuestions) {
-                    nextBtn.textContent = "Neste spørsmål";
-                } else {
-                    nextBtn.textContent = "Vis resultat";
-                }
-                nextBtn.style.display = "inline-block";
+            // Viser alltid neste-knapp (eller vis resultat på siste)
+            if (question < totalQuestions) {
+                nextBtn.textContent = "Neste spørsmål";
             } else {
-                // Feil svar
-                messageElement.textContent = "Feil svar. Prøv igjen!";
+                nextBtn.textContent = "Vis resultat";
             }
+
+            // Riktig svar
+            if (correct) {
+                if (question <= 4) {
+                    // Spm 1-4: Bare si "Riktig!"
+                    messageElement.textContent = "Riktig!";
+                } else {
+                    // Spm 5-10: Gi riktig svar-melding
+                    messageElement.textContent = correctMessages[question];
+                }
+                score++;
+            } else {
+                // Feil svar: Vis riktig svar
+                if (question <= 4) {
+                    messageElement.textContent = "Feil svar. Riktig svar: " + correctAnswersText[question];
+                } else {
+                    messageElement.textContent = "Feil svar. " + correctMessages[question];
+                }
+            }
+
+            nextBtn.style.display = "inline-block";
+            updateScore();
         }
 
         function goNextQuestion(question) {
@@ -286,18 +299,27 @@
                     document.getElementById(`nextBtn${currentQuestion}`).style.display = "none";
                 }
                 updateProgress();
-                startTimer();
             } else {
                 endGame();
             }
         }
 
         function endGame() {
-            clearInterval(timerInterval);
             if (document.getElementById(`question${currentQuestion}`)) {
                 document.getElementById(`question${currentQuestion}`).classList.remove("visible");
             }
             document.getElementById("endMessage").classList.add("visible");
+
+            let endMessageText;
+            if (score > 8) {
+                endMessageText = "Gratulerer, du er ekspert på jule-statistikken!";
+            } else if (score >= 5 && score <= 7) {
+                endMessageText = "Gratulerer, du er midt-på-juletreet god på jule-statistikken";
+            } else {
+                endMessageText = "Gratulerer, men du må nok øve mer på jule-statistikken i juleferien. Du kan stemple inn med faglig administrasjon og ledelse i DFØ";
+            }
+
+            document.getElementById("endMessageTitle").textContent = endMessageText;
             document.getElementById("score").textContent = `Du fikk ${score} av ${totalQuestions} poeng!`;
         }
 
@@ -305,6 +327,16 @@
         const ctx = canvas.getContext("2d");
         let drawing = false;
         let points = [];
+
+        // Funksjon for å hente touch-posisjon på mobile enheter
+        function getTouchPos(canvas, touchEvent) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = touchEvent.touches[0];
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
 
         canvas.addEventListener("mousedown", (e) => {
             const rect = canvas.getBoundingClientRect();
@@ -333,12 +365,38 @@
             drawing = false;
         });
 
+        // Touch-eventer for mobil
+        canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            const pos = getTouchPos(canvas, e);
+            drawing = true;
+            points = [];
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        });
+
+        canvas.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            if (drawing) {
+                const pos = getTouchPos(canvas, e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                points.push(pos);
+            }
+        });
+
+        canvas.addEventListener("touchend", () => {
+            drawing = false;
+        });
+
         function checkDrawing() {
             const messageElement = document.getElementById("message4");
             const nextBtn4 = document.getElementById("nextBtn4");
 
             if (points.length < 2) {
-                messageElement.textContent = "Tegn en pil først!";
+                messageElement.textContent = "Feil svar. Riktig svar: Grafen går oppover";
+                nextBtn4.style.display = "inline-block";
+                updateScore();
                 return;
             }
 
@@ -346,17 +404,17 @@
             const endPoint = points[points.length - 1];
 
             if (endPoint.y < startPoint.y) {
-                // Riktig tegning
                 messageElement.textContent = "Riktig! Grafen går oppover.";
                 score++;
-                nextBtn4.style.display = "inline-block";
             } else {
-                messageElement.textContent = "Feil! Grafen går ikke nedover.";
+                messageElement.textContent = "Feil svar. Riktig svar: Grafen går oppover";
             }
+            nextBtn4.style.display = "inline-block";
+            updateScore();
         }
 
         updateProgress();
-        startTimer();
+        updateScore();
     </script>
 </body>
 </html>
