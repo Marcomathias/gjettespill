@@ -61,17 +61,6 @@
             border-radius: 10px;
             border: 2px solid #7E5EE8;
         }
-        canvas {
-            border: 2px solid #7E5EE8;
-            cursor: crosshair;
-            margin: 20px auto;
-            display: block;
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            background: url('graph.png') no-repeat left center;
-            background-size: contain;
-        }
         button {
             padding: 15px 30px; 
             font-size: 18px; 
@@ -126,16 +115,16 @@
         <button id="nextBtn3" style="display:none;" onclick="goNextQuestion(3)">Neste spørsmål</button>
     </div>
 
+    <!-- Nytt spørsmål 4 -->
     <div id="question4" class="question-container">
-        <h2>Går grafen opp eller ned?</h2>
-        <p>Tegn videre på grafen for å vise om den går opp eller ned.</p>
-        <canvas id="draw-area" width="800" height="400"></canvas>
-        <button onclick="checkDrawing()">Sjekk tegning</button>
+        <h2>Hva viser denne figuren?</h2>
+        <img src="juletre.png" alt="Figur av juletre">
+        <div class="answer-box" onclick="checkAnswer(4, 1)">Antall snille barn</div>
+        <div class="answer-box" onclick="checkAnswer(4, 2)">Antall reinsdyr påkjørt av tog</div>
+        <div class="answer-box" onclick="checkAnswer(4, 3)">Antall juletrær eksportert</div>
         <div id="message4" class="message"></div>
         <button id="nextBtn4" style="display:none;" onclick="goNextQuestion(4)">Neste spørsmål</button>
     </div>
-
-    <!-- NYE SPØRSMÅL START (5-10) -->
 
     <div id="question5" class="question-container">
         <h2>Hvor mange kommunikasjonsrådgivere trengs for å sette opp et juletre?</h2>
@@ -191,8 +180,6 @@
         <button id="nextBtn10" style="display:none;" onclick="goNextQuestion(10)">Vis resultat</button>
     </div>
 
-    <!-- NYE SPØRSMÅL SLUTT -->
-
     <div id="endMessage" class="question-container">
         <h2 id="endMessageTitle"></h2>
         <img src="nissemann.png" alt="Nissemann">
@@ -216,30 +203,30 @@
         // Q1: 2 (165 753)
         // Q2: 1 (Tromsø)
         // Q3: 1 (Eksport av akevitt målt i liter)
-        // Q4: Tegning (Grafen går oppover)
+        // Q4: 3 (Antall juletrær eksportert)
         // Q5: 2 (b)
         // Q6: 3 (c)
         // Q7: 2 (b)
         // Q8: 1 (a)
         // Q9: 3 (c)
         // Q10:3 (c)
-        const correctAnswers = [2, 1, 1, null, 2, 3, 2, 1, 3, 3];
+        const correctAnswers = [2, 1, 1, 3, 2, 3, 2, 1, 3, 3];
 
         // Tekster for riktige svar på spørsmål 1-4:
         const correctAnswersText = {
             1: "165 753",
             2: "Tromsø",
             3: "Eksport av akevitt målt i liter",
-            4: "Grafen går oppover"
+            4: "Antall juletrær eksportert"
         };
 
-        // Meldinger ved riktig svar (5-10):
+        // Meldinger ved riktig svar på spørsmål 5-10:
         const correctMessages = {
-            5: "Riktig svar: b) Selvfølgelig, alt handler om målgruppen!)",
-            6: "Riktig svar: c) Desken er alltid klar for 'siste liten'!)",
-            7: "Riktig svar: b) Tallene er aldri så ferske som folk tror!)",
+            5: "Riktig svar: b) Selvfølgelig, alt handler om målgruppen!",
+            6: "Riktig svar: c) Desken er alltid klar for 'siste liten'!",
+            7: "Riktig svar: b) Tallene er aldri så ferske som folk tror!",
             8: "Riktig svar: a) Ingen byråkratiske julehilsener på klarspråk-vakt!",
-            9: "Riktig svar: c) SEO er livsviktig – også i julen!)",
+            9: "Riktig svar: c) SEO er livsviktig – også i julen!",
             10:"Riktig svar: c) Fulltelling is King"
         };
 
@@ -255,17 +242,14 @@
             const nextBtn = document.getElementById(`nextBtn${question}`);
             const correct = (answer === correctAnswers[question - 1]);
             
-            // Disable alle svaralternativer etter første klikk
             disableAnswers(question);
 
-            // Viser alltid neste-knapp (eller vis resultat på siste)
             if (question < totalQuestions) {
                 nextBtn.textContent = "Neste spørsmål";
             } else {
                 nextBtn.textContent = "Vis resultat";
             }
 
-            // Riktig svar
             if (correct) {
                 if (question <= 4) {
                     // Spm 1-4: Bare si "Riktig!"
@@ -293,7 +277,6 @@
             if (question < totalQuestions) {
                 currentQuestion++;
                 document.getElementById(`question${currentQuestion}`).classList.add("visible");
-                // Skjul eventuelle meldinger og neste-knapp på neste spørsmål
                 document.getElementById(`message${currentQuestion}`).textContent = "";
                 if (document.getElementById(`nextBtn${currentQuestion}`)) {
                     document.getElementById(`nextBtn${currentQuestion}`).style.display = "none";
@@ -313,7 +296,7 @@
             let endMessageText;
             if (score > 8) {
                 endMessageText = "Gratulerer, du er ekspert på jule-statistikken!";
-            } else if (score >= 5 && score <= 7) {
+            } else if (score >= 5 && score <= 8) {
                 endMessageText = "Gratulerer, du er midt-på-juletreet god på jule-statistikken";
             } else {
                 endMessageText = "Gratulerer, men du må nok øve mer på jule-statistikken i juleferien. Du kan stemple inn med faglig administrasjon og ledelse i DFØ";
@@ -321,96 +304,6 @@
 
             document.getElementById("endMessageTitle").textContent = endMessageText;
             document.getElementById("score").textContent = `Du fikk ${score} av ${totalQuestions} poeng!`;
-        }
-
-        const canvas = document.getElementById("draw-area");
-        const ctx = canvas.getContext("2d");
-        let drawing = false;
-        let points = [];
-
-        // Funksjon for å hente touch-posisjon på mobile enheter
-        function getTouchPos(canvas, touchEvent) {
-            const rect = canvas.getBoundingClientRect();
-            const touch = touchEvent.touches[0];
-            return {
-                x: touch.clientX - rect.left,
-                y: touch.clientY - rect.top
-            };
-        }
-
-        canvas.addEventListener("mousedown", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            drawing = true;
-            points = [];
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        });
-
-        canvas.addEventListener("mousemove", (e) => {
-            if (drawing) {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                points.push({ x, y });
-            }
-        });
-
-        canvas.addEventListener("mouseup", () => {
-            drawing = false;
-        });
-
-        // Touch-eventer for mobil
-        canvas.addEventListener("touchstart", (e) => {
-            e.preventDefault();
-            const pos = getTouchPos(canvas, e);
-            drawing = true;
-            points = [];
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        });
-
-        canvas.addEventListener("touchmove", (e) => {
-            e.preventDefault();
-            if (drawing) {
-                const pos = getTouchPos(canvas, e);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                points.push(pos);
-            }
-        });
-
-        canvas.addEventListener("touchend", () => {
-            drawing = false;
-        });
-
-        function checkDrawing() {
-            const messageElement = document.getElementById("message4");
-            const nextBtn4 = document.getElementById("nextBtn4");
-
-            if (points.length < 2) {
-                messageElement.textContent = "Feil svar. Riktig svar: Grafen går oppover";
-                nextBtn4.style.display = "inline-block";
-                updateScore();
-                return;
-            }
-
-            const startPoint = points[0];
-            const endPoint = points[points.length - 1];
-
-            if (endPoint.y < startPoint.y) {
-                messageElement.textContent = "Riktig! Grafen går oppover.";
-                score++;
-            } else {
-                messageElement.textContent = "Feil svar. Riktig svar: Grafen går oppover";
-            }
-            nextBtn4.style.display = "inline-block";
-            updateScore();
         }
 
         updateProgress();
